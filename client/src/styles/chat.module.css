@@ -1,0 +1,423 @@
+/* Reset and Base Styles */
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #fafbfc;
+}
+
+/* Header Section */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  padding: 24px 48px;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: none;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  margin-left: 0;
+}
+
+.title {
+  font-size: 2.2rem;
+  font-weight: 500;
+  color: #222;
+  margin: 0;
+}
+
+.searchBox {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 18px;
+  width: 20px;
+  height: 20px;
+  color: #b0b8c1;
+  z-index: 1;
+}
+
+.searchInput {
+  width: 340px;
+  padding: 12px 16px 12px 48px;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  background: #f7f8fa;
+  transition: all 0.2s ease;
+  box-shadow: none;
+}
+
+.searchInput:focus {
+  outline: none;
+  background: #f1f3f4;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-right: 0;
+}
+
+.username {
+  font-size: 15px;
+  color: #888;
+  font-weight: 400;
+}
+
+.avatar {
+  width: 48px;
+  height: 48px;
+  background: #e5e7eb;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #b0b8c1;
+}
+
+.avatar svg {
+  width: 28px;
+  height: 28px;
+}
+
+/* Main Layout */
+.main {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  background: none;
+  flex: 1;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+/* Left Panel - Friends */
+.leftPanel {
+  width: 320px;
+  background: #fff;
+  border-right: 1px solid #e5e7eb;
+  padding: 48px 0 0 48px;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.sectionTitle {
+  font-size: 2rem;
+  font-weight: 400;
+  color: #222;
+  margin: 0 0 0.5em 0;
+}
+
+/* Center Panel - Chat */
+.chatSection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  min-width: 0;
+  height: calc(100vh - 90.24px); /* ✅ Set explicit height */
+}
+
+
+.chatHeader {
+  padding: 24px 0 0 48px;
+  display: flex;
+  border-bottom: none;
+  background: #fff;
+}
+
+.chatName {
+  font-size: 32px;
+  /* justify-content: center; */
+  font-weight: 400;
+  color: #222;
+  margin: 0;
+}
+
+.messagesArea {
+  flex: 1;
+  padding: 0 48px 0 48px;
+  overflow-y: scroll;
+  min-height: 0;
+  height: 0; /* ✅ Force flex item to respect container height */
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  justify-content: flex-start; /* ✅ Changed from flex-end */
+}
+/* .messagesArea::-webkit-scrollbar {
+  width: 20px !important;
+  background: red !important;
+} */
+
+/* Webkit browsers */
+.messagesArea::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.messagesArea::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.messagesArea::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+.message {
+  display: flex;
+  margin-bottom: 0;
+}
+
+.ownMessage {
+  justify-content: flex-end;
+}
+
+.otherMessage {
+  justify-content: flex-start;
+}
+
+.messageContent {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 70%;            /* ✅ Prevents horizontal stretching */
+  word-wrap: break-word;     /* ✅ Wraps long words */
+  overflow-wrap: anywhere;   /* ✅ Ensures break even for very long words */
+}
+
+.otherMessage .messageContent {
+  flex-direction: row-reverse;
+}
+
+.messageBubble {
+  padding: 12px 16px;         /* Add padding to look like a bubble */
+  border-radius: 12px;
+  background: #e5e7eb;
+  font-size: 15px;
+  line-height: 1.4;
+  color: #222;
+  word-break: break-word;     /* ✅ Ensures no overflow */
+}
+
+.ownMessage .messageBubble {
+  background: none;
+  color: #222;
+}
+
+.otherMessage .messageBubble {
+  background: none;
+  color: #222;
+}
+
+.messageBubble p {
+  margin: 0;
+}
+
+.messageAvatar {
+  width: 32px;
+  height: 32px;
+  border: 2px solid red;
+  background: #e5e7eb;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #b0b8c1;
+  flex-shrink: 0; /* ✅ Prevents avatar from shrinking */
+  min-width: 32px; /* ✅ Ensures minimum width is maintained */
+  min-height: 32px; /* ✅ Ensures minimum height is maintained */
+}
+
+.messageAvatar svg {
+  width: 16px;
+  height: 16px;
+}
+
+.messageInputArea {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 48px;
+  border-top: none;
+  background: #f7f8fa;
+}
+
+.messageInput {
+  flex: 1;
+  padding: 16px 24px;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  background: #fff;
+  transition: all 0.2s ease;
+  box-shadow: none;
+}
+
+.messageInput:focus {
+  outline: none;
+  background: #f1f3f4;
+}
+
+.sendButton {
+  width: 44px;
+  height: 44px;
+  background: #e5e7eb;
+  border: none;
+  border-radius: 50%;
+  color: #346fb1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.sendButton:hover {
+  background: #e5e7eb;
+  color: #888;
+  transform: none;
+}
+
+.sendButton svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Right Panel - My Chats */
+.rightPanel {
+  width: 320px;
+  background: #fff;
+  border-left: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  box-shadow: none;
+  min-width: 320px;
+}
+
+.rightHeader {
+  padding: 24px 0 0 32px;
+  border-bottom: none;
+  background: #fff;
+}
+
+.newGroupRow {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: 16px;
+  font-size: 16px;
+  color: #222;
+  gap: 8px;
+}
+
+.addButton {
+  width: 24px;
+  height: 24px;
+  background: none;
+  border: none;
+  color: #31557e;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.addButton:hover {
+  background: #f7f8fa;
+  color: #4b2a8d;
+}
+
+.addButton svg {
+  width: 18px;
+  height: 18px;
+}
+
+.chatList {
+  flex: 1;
+  overflow-y: auto;
+  padding-top: 24px;
+}
+
+.chatItem {
+  padding: 8px 16px;
+  cursor: pointer;
+  border: none;
+  background: #ededed00;
+  transition: none;
+  margin-bottom: 8px;
+  border-radius: 4px;
+}
+
+.chatItem:hover {
+  background: #f7f8fa;
+}
+
+.activeChatItem {
+  background: #e5e7eb;
+  border-left: none;
+}
+
+.chatItemName {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #222;
+  margin-bottom: 2px;
+}
+
+.chatItemPreview {
+  font-size: 1rem;
+  color: #888;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .leftPanel {
+    width: 200px;
+    padding-left: 12px;
+  }
+  .rightPanel {
+    width: 180px;
+  }
+  .searchInput {
+    width: 120px;
+  }
+  .main {
+    flex-direction: column;
+  }
+}
+
+.appContainer {
+  display: flex;
+  min-height: 100vh;
+  min-width: 100vw;
+  background: #fafbfc;
+}
+
+.mainContent {
+  flex: 1;
+  min-height: 100vh;
+  background: #fafbfc;
+  display: flex;
+  flex-direction: column;
+}
