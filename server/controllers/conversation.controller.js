@@ -18,9 +18,13 @@ const createGroupChat = expressAsyncHandler(async(req, res) => {
     });
     
     if (existingGroup) {
-        return res.status(400).json({ message: "Group with these participants already exists" });
+        const populatedGroup = await existingGroup.populate('participants', '-password');
+        return res.status(200).json({
+            message: "Group already exists",
+            conversation: populatedGroup
+        });
     }
-    
+
     const newConversation = new Conversation({
         conversationName,
         participants,

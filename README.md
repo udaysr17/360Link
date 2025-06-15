@@ -34,12 +34,14 @@
 ### Environment Setup
 
 #### Backend `.env`
+```bash
 PORT=3000
 MONGODB_URI=your_mongodb_connection_string
 JWT_SECRET_KEY=your_jwt_secret
 CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
+```
 
 ## Installation
 
@@ -52,7 +54,7 @@ cd 360Link
 ### Setup and run backend
 
 ```bash
-cd backend
+cd server
 npm install
 npm run dev
 ```
@@ -60,7 +62,7 @@ npm run dev
 ### Setup and run frontend
 
 ```bash
-cd ../frontend
+cd client
 npm install
 npm run dev
 ```

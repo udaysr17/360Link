@@ -119,23 +119,18 @@ const Chat = () => {
     if (existingConversation) {
       setSelectedConversation(existingConversation);
     } else {
-      try {
-        const { data } = await axios.post('/api/conversation',{ participants: [selectedUser._id] });
+        try {
+          const { data } = await axios.post('/api/conversation', {
+            participants: [selectedUser._id]
+          });
 
-        const newConversation = data.conversation;
-        setConversations([newConversation, ...conversations]);
-        setSelectedConversation(newConversation);
-      } catch (error) {
-        // Handle existing conversation case (if 400 status)
-        if (error.response?.status === 400 && error.response?.data?.populatedConversation) {
-          const existingConv = error.response.data.populatedConversation;
-          setSelectedConversation(existingConv);
-        } else {
-          console.error("Error creating conversation:", error);
-          toast.error(error.response?.data?.message);
-        }
+          const newConversation = data.conversation;
+          setConversations([newConversation, ...conversations]);
+          setSelectedConversation(newConversation);
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Something went wrong");
+          }
       }
-    }
     
     setSearchTerm('');
     setSearchResults([]);
@@ -157,7 +152,6 @@ const Chat = () => {
       console.log("Send message response:", data);
       const newMessage = data.data;
     
-
       setMessages(prevMessages => [...prevMessages, newMessage]);
       setInputMessage('');
 
