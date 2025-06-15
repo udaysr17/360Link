@@ -47,16 +47,19 @@ const login = asyncHandler( async(req, res)=>{
 
 const logout = asyncHandler(async(req, res)=>{
     return res.status(200)
-    .clearCookie('token')
+    .clearCookie('token',{
+        httpOnly: true
+    })
     .json({
-        message: 'Logget out successfully'
+        message: 'Logged out successfully'
     })
 })
 
 const register = asyncHandler(async(req, res)=>{
+    console.log("i'm here");
     const {username, email , password, avatar} = req.body;
-    // console.log(req.body);
-    // console.log(req.file);
+    console.log(req.body);
+    console.log(req.file);
     let url = avatar;
     const originalPath = req.file?.path;
     if(originalPath){
@@ -121,8 +124,19 @@ const searchUser = asyncHandler(async(req,res)=>{
         })
     }
     return res.status(200).json({
-        message : "Users fetched successfully",
         users
+    })
+})
+
+const getUserInfo = asyncHandler(async(req,res)=>{
+    const user = req.user._id;
+
+    const userInfo = await User.findById(user).select("-password");
+    return res.status(200).json({
+        username : userInfo.username,
+        _id : userInfo._id,
+        email : userInfo.email,
+        avatar : userInfo.avatar
     })
 })
 
@@ -130,5 +144,6 @@ export {
     login,
     logout,
     register,
-    searchUser
+    searchUser,
+    getUserInfo
 }

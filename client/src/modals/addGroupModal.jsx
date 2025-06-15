@@ -2,32 +2,7 @@ import React, { useState } from 'react';
 
 const defaultAvatar = 'https://cdn.jsdelivr.net/gh/edent/SuperTinyIcons/images/svg/amongus.svg';
 
-const usersList = [
-  {
-    id: 1,
-    name: 'Ansul',
-    email: 'ansulluharuka@rediffmail.com',
-    avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
-  },
-  {
-    id: 2,
-    name: 'Shourya gupta',
-    email: '22ucs202@lnmiit.ac.in',
-    avatar: null,
-  },
-  {
-    id: 3,
-    name: 'Ansull',
-    email: 'ansulluharuka21@gmail.com',
-    avatar: 'https://cdn.jsdelivr.net/gh/edent/SuperTinyIcons/images/svg/amongus.svg',
-  },
-  {
-    id: 4,
-    name: 'Adit',
-    email: 'abcd@gmail.com',
-    avatar: null,
-  },
-];
+const usersList = [];
 
 const modalStyle = {
   position: 'fixed',

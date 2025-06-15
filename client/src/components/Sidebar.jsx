@@ -11,9 +11,9 @@ const Sidebar = () => {
         <Link to="/dashboard" className={location.pathname === '/dashboard' ? styles.active : ''}>Dashboard</Link>
         <Link to="/chat" className={location.pathname === '/chat' ? styles.active : ''}>Chat</Link>
       </nav>
-      <div className={styles.footer}>360Link is created by Uday</div>
+      <div className={styles.footer}>All rights reserved</div>
     </aside>
   );
 };
 
-export default Sidebar; 
+export default Sidebar;

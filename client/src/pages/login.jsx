@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from '../styles/login.module.css'
+import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const {setUser} = useAuth();
 
   useEffect(() => {
     setEmail('');
@@ -21,15 +26,9 @@ const Login = () => {
   const submitHandler = async () => {
     setLoading(true);
     if (!email || !password) {
-      toast({
-        title: "Please Fill all the Fields",
-        status: "warning",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
-      });
-      setLoading(false);
-      return;
+        toast.error("Fill all the credentials")
+        setLoading(false);
+        return;
     }
 
     try {
@@ -38,31 +37,13 @@ const Login = () => {
           "Content-type": "application/json",
         },
       };
-      const { data } = await axios.post(
-        "/api/user/login",
-        { email, password },
-        config
-      );
-      
-      toast({
-        title: "Login Successful",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
-      });
-      localStorage.setItem("userInfo", JSON.stringify(data));
+      const { data } = await axios.post("/api/user/login",{ email, password },config);
+      setUser(data.user);
       setLoading(false);
-    //   history.push("/chat");
+      // toast.success(data.message);
+      navigate('/chat');
     } catch (error) {
-      toast({
-        title: "Error Occurred!",
-        description: error.response.data.message,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
-      });
+      toast.error(error.response?.data?.message);
       setLoading(false);
     }
   };
@@ -117,24 +98,24 @@ const Login = () => {
             className={`${styles.signInButton} ${loading ? styles.loading : ''}`}
             disabled={loading}
           >
-            {loading ? 'Signing In...' : 'Sign In'}
+            {loading ? 'Logging In...' : 'Log In'}
           </button>
 
-          <div className={styles.forgotPassword}>
+          {/* <div className={styles.forgotPassword}>
             <a href="#" className={styles.forgotLink}>Forgot Password?</a>
-          </div>
+          </div> */}
         </form>
 
         <div className={styles.footer}>
           <p className={styles.footerText}>
-            Need an account? <a href="#" className={styles.createAccountLink}>Create student account.</a>
+            Need an account? <a href="/signup" className={styles.createAccountLink}>Create student account.</a>
           </p>
         </div>
       </div>
       
       <div className={styles.bottomFooter}>
         <p className={styles.copyright}>
-          © 2025 360Link. Created by <span className={styles.poweredBy}>Uday</span>.
+          All rights reserved@ <span className={styles.poweredBy}>Uday</span>.
         </p>
       </div>
     </div>

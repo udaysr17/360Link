@@ -23,21 +23,24 @@ const Signup = () => {
     }
     console.log(username, email , password, avatar);
     try{
-      const config = {
-        header : {
-          "Content-type" : "application/json"
-        }
+      const formData = new FormData();
+      formData.append('username', username);
+      formData.append('email', email);
+      formData.append('password', password);
+      if (avatar) {
+        formData.append('avatar', avatar);
       }
-      const response = await axios.post("api/signup", {
-        username,
-        email,
-        password,
-        avatar
-      }, config);
+
+      const config = {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      };
+      const response = await axios.post("api/user/signup", formData, config);
       console.log(response);
       setLoading(false);
       toast.success(response.data.message);
-      navigate('/chat')
+      navigate('/login')
     }
     catch (error) {
       const message = error.response?.data?.message;
@@ -104,7 +107,7 @@ const Signup = () => {
               id="avatar"
               name="avatar"
               accept="image/*"
-              onChange={(e)=> setAvatar(e.target.value)}
+              onChange={(e)=> setAvatar(e.target.files[0])}
               className={styles.input}
               disabled={loading}
             />
@@ -128,7 +131,7 @@ const Signup = () => {
       </div>
       <div className={styles.bottomFooter}>
         <p className={styles.copyright}>
-          © 2025 360Link. Created by <span className={styles.poweredBy}>Uday</span>.
+          All rights reserved.
         </p>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import express from 'express'
-import { login, logout, register , searchUser} from '../controllers/user.controller.js'
+import { getUserInfo, login, logout, register , searchUser} from '../controllers/user.controller.js'
 import upload from '../config/multer.js';
 import protect from '../middleware/auth.middleware.js';
 
@@ -14,15 +14,11 @@ router.post('/test', (req, res)=>{
         message : "test route is working"
     })
 })
+
+router.get('/me', protect,getUserInfo );
 router.get('/search', protect , searchUser);
 router.post('/signup',upload.single('avatar'), register);
 router.post('/login',login);
-router.post('/logout', protect, logout);
-router.post('/authroute', protect, (req, res)=>{
-    console.log('Yes auth is working siuuuuuuuuuuuu')
-    return res.status(200).json({
-        message : 'Yes auth is working siuuuuuuuuuuuu'
-    })
-})
+router.post('/logout',logout);
 
 export default router

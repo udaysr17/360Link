@@ -23,9 +23,9 @@ a:hover {
 }
 
 html, body, #root {
-  height: 100%;
+  height: 100vh;
   min-height: 100vh;
-  width: 100%;
+  width: 100vw;
   min-width: 100vw;
   margin: 0;
   padding: 0;

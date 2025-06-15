@@ -1,42 +1,49 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Login from './pages/login';
-import Chat from './pages/chat';
-import Signup from './pages/signup';
-import ProfileModal from './miscellaneous/profileModal';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+import Login from './pages/login.jsx';
+import Chat from './pages/chat.jsx';
+import Signup from './pages/signup.jsx';
+import NotFound from './pages/notFound.jsx';
 import './App.css';
+
 
 function App() {
   return (
-    <>
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path = "/chat" element = {<Chat/>}/>
-        <Route path = "/signup" element= {<Signup/>}/>
-        <Route path = "/profileModal" element = {<ProfileModal/>}/>
+        <Route path="/login" element = {<Login/>}/>
+        <Route path="/chat" element={<Chat/>}/>
+        <Route path="/signup" element={<Signup/>}/>
+        <Route path="*" element={<NotFound/>} />
       </Routes>
-    </BrowserRouter>
+      
       <Toaster
-          position="top-left"
-          gutter={12}
-          containerStyle={{ margin: "8px" }}
-          toastOptions={{
-            success: {
-              duration: 3000,
+        position="top-right"
+        gutter={8}
+        containerStyle={{ margin: "8px" }}
+        toastOptions={{
+          duration: 3000,
+          style: {
+            fontSize: "14px",
+            padding: "16px 24px",
+            backgroundColor: "#1e293b",
+            color: "#f8fafc",
+          },
+          success: {
+            iconTheme: {
+              primary: "#4ade80",
+              secondary: "#f8fafc",
             },
-            error: {
-              duration: 5000,
+          },
+          error: {
+            iconTheme: {
+              primary: "#f87171",
+              secondary: "#f8fafc",
             },
-            style: {
-              fontSize: "14px",
-              padding: "16px 24px",
-              backgroundColor: "#ffffff",
-              color: "#333333",
-            },
-          }}
+          },
+        }}
       />
-    </>
+    </BrowserRouter>
   );
 }
 

@@ -2,84 +2,160 @@ import Message from "../models/message.model.js";
 import User from "../models/user.model.js";
 import Conversation from "../models/conversation.model.js";
 import expressAsyncHandler from "express-async-handler";
-import { updateConversation } from "./conversation.controller.js";
 
-// create , read , update , delete
-const createMessage = expressAsyncHandler(async(req, res)=> {
+// create, read, update , delete
+const createMessage = expressAsyncHandler(async(req, res) => {
     console.log('this is create message route');
-    const {content} = req.body;
+    const { content } = req.body;
     const sender = req.user._id;
-    const conversation = req.params.conversationId;
+    const conversationId = req.params.conversationId;
 
-    if(content.trim().length ==0){
+    if (!content || content.trim().length === 0) {
         return res.status(400).json({
-            message : "Message is empty"
-        })
+            message: "Message content cannot be empty"
+        });
+    }
+
+    const conversation = await Conversation.findById(conversationId);
+    if (!conversation) {
+        return res.status(404).json({
+            message: "Conversation not found"
+        });
+    }
+
+    if (!conversation.participants.includes(sender)) {
+        return res.status(403).json({
+            message: "User not authorized to send messages in this conversation"
+        });
     }
 
     const newMessage = await Message.create({
-        content,
+        content: content.trim(),
         sender,
-        conversation
-    })
+        conversation: conversationId
+    });
 
-    await Conversation.findByIdAndUpdate(conversation,  {
-        latestMessage : newMessage._id
-    })
+    const populatedMessage = await Message.findById(newMessage._id)
+        .populate('sender', '-password');
 
-    return res.status(200).json({
-        message : "Message created successfully"
-    })
-})
+    await Conversation.findByIdAndUpdate(conversationId, {
+        latestMessage: newMessage._id,
+        updatedAt: new Date()
+    });
 
-const getMessage = expressAsyncHandler(async(req, res)=> {
+    return res.status(201).json({
+        message: "Message created successfully",
+        data: populatedMessage  
+    });
+});
+
+const getMessage = expressAsyncHandler(async(req, res) => {
     const conversationId = req.params.conversationId;
-    const messages = await Message.find({conversation : conversationId})
-    .sort({createdAt : 1})
-    .populate("sender" , "-password")
+    const userId = req.user._id;
+
+    const conversation = await Conversation.findById(conversationId);
+    if (!conversation) {
+        return res.status(404).json({
+            message: "Conversation not found"
+        });
+    }
+
+    if (!conversation.participants.includes(userId)) {
+        return res.status(403).json({
+            message: "User not authorized to view messages"
+        });
+    }
+
+    const messages = await Message.find({ conversation: conversationId })
+        .sort({ createdAt: 1 })
+        .populate("sender", "-password");
 
     return res.status(200).json({
-        message : "Messages fetched successfully",
-        data : messages
-    })
-})
+        message: "Messages fetched successfully",
+        messages
+    });
+});
 
-const editMessage = expressAsyncHandler(async(req, res)=>{
-    // logic to edit a message
-    const {conversation, message, content} = req.body;
-    const updatedMessage = await Message.findByIdAndUpdate(message._id, {
-        content : content,
-        updatedAt : Date.now()
-    })
+const editMessage = expressAsyncHandler(async(req, res) => {
+    const { messageId, content } = req.body;
+    const userId = req.user._id;
 
-    if(conversation.latestMessage._id == message._id){
-        const updatedConversation = await Conversation.findByIdAndUpdate(conversation._id, {
-            latestMessage : updatedMessage
-        })
+    if (!content || content.trim().length === 0) {
+        return res.status(400).json({
+            message: "Message content cannot be empty"
+        });
+    }
+
+    const message = await Message.findById(messageId);
+    if (!message) {
+        return res.status(404).json({
+            message: "Message not found"
+        });
+    }
+
+    if (message.sender.toString() !== userId.toString()) {
+        return res.status(403).json({
+            message: "You can only edit your own messages"
+        });
+    }
+
+    const updatedMessage = await Message.findByIdAndUpdate(
+        messageId,
+        {
+            content: content.trim(),
+            updatedAt: new Date(),
+            isEdited: true
+        },
+        { new: true }
+    ).populate('sender', '-password');
+
+    return res.status(200).json({
+        message: "Message updated successfully",
+        data: updatedMessage
+    });
+});
+
+const deleteMessage = expressAsyncHandler(async(req, res) => {
+    const { messageId } = req.body;
+    const userId = req.user._id;
+
+    const message = await Message.findById(messageId);
+    if (!message) {
+        return res.status(404).json({
+            message: "Message not found"
+        });
+    }
+
+    if (message.sender.toString() !== userId.toString()) {
+        return res.status(403).json({
+            message: "You can only delete your own messages"
+        });
+    }
+
+    const conversationId = message.conversation;
+
+    await Message.findByIdAndDelete(messageId);
+
+    const conversation = await Conversation.findById(conversationId);
+    if (conversation.latestMessage && conversation.latestMessage.toString() === messageId) {
+        const newLatestMessage = await Message.findOne({ 
+            conversation: conversationId 
+        }).sort({ createdAt: -1 });
+
+        await Conversation.findByIdAndUpdate(conversationId, {
+            latestMessage: newLatestMessage ? newLatestMessage._id : null,
+            updatedAt: new Date()
+        });
     }
 
     return res.status(200).json({
-        message : "Updated message",
-        updatedMessage,
-        updateConversation
-    })
-})
-
-const deleteMessage = expressAsyncHandler(async(req, res)=> {
-    const {conversation, message} = req.body;
-    await Message.findByIdAndDelete(message._id);
-    // update the latest message of the conversation ,, how ??????
-    if(conversation.latestMessage._id == message._id){
-        const updateConversation = await Conversation.findByIdAndDelete(conversation.latestMessage);
-    }
-    return res.status(200).json({
-        message : "Deleted Message"
-    })
-})
+        message: "Message deleted successfully"
+    });
+});
 
 export {
     createMessage,
     getMessage,
     editMessage,
     deleteMessage
-}
+};
