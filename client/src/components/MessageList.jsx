@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import styles from '../styles/chat.module.css';
 import { useAuth } from '../context/AuthContext.jsx';
 
-const MessageList = ({ messages, selectedConversation }) => {
+const MessageList = ({ messages, selectedConversation, setShowGroupMembers }) => {
   const { user } = useAuth();
   const messagesEndRef = useRef(null);
 
@@ -27,7 +27,7 @@ const MessageList = ({ messages, selectedConversation }) => {
           }
         </h2>
         {selectedConversation.isGroup && (
-          <span className={styles.groupInfo}>
+          <span className={styles.groupInfo} onClick={()=>setShowGroupMembers(true)}>
             {selectedConversation.participants?.length || 0} members
           </span>
         )}

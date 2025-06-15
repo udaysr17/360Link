@@ -4,40 +4,44 @@ import Message from "../models/message.model.js";
 import User from "../models/user.model.js";
 import mongoose from "mongoose";
 
-const createGroupChat = expressAsyncHandler(async(req, res) => {
-    const { conversationName, participants } = req.body;
-    const user = req.user._id;
-
-    if (!participants.includes(user)) {
-        participants.push(user);
-    }
-
-    const existingGroup = await Conversation.findOne({
-        isGroup: true,
-        participants: { $all: participants, $size: participants.length }
-    });
-    
-    if (existingGroup) {
-        const populatedGroup = await existingGroup.populate('participants', '-password');
-        return res.status(200).json({
-            message: "Group already exists",
-            conversation: populatedGroup
-        });
-    }
-
-    const newConversation = new Conversation({
-        conversationName,
-        participants,
-        isGroup: true,
-        groupAdmin: user
-    });
-
-    const savedConversation = await newConversation.save();
-    
-    return res.status(201).json({
-        message: "Group created successfully",
-        savedConversation
-    });
+const createGroupChat = (async(req, res) => {
+   try {
+     const { conversationName, participants } = req.body;
+     const user = req.user._id;
+ 
+     if (!participants.includes(user)) {
+         participants.push(user);
+     }
+ 
+     const existingGroup = await Conversation.findOne({
+         isGroup: true,
+         participants: { $all: participants, $size: participants.length }
+     });
+     
+     if (existingGroup) {
+         const populatedGroup = await existingGroup.populate('participants', '-password');
+         return res.status(200).json({
+             message: "Group already exists",
+             conversation: populatedGroup
+         });
+     }
+ 
+     const newConversation = new Conversation({
+         conversationName,
+         participants,
+         isGroup: true,
+         groupAdmin: user
+     });
+ 
+     const savedConversation = await newConversation.save();
+     
+     return res.status(201).json({
+         message: "Group created successfully",
+         savedConversation
+     });
+   } catch (err) {
+    console.error(err.message)
+   }
 });
 
 const createPersonalChat = expressAsyncHandler(async(req, res) => {

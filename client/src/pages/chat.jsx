@@ -14,6 +14,7 @@ import { useAuth } from "../context/AuthContext.jsx";
 import { useConversation } from "../context/ConversationContext.jsx";
 import { useSocket } from "../context/SocketContext.jsx";
 import { useNavigate } from "react-router-dom";
+import GroupMembersListModal from "../modals/groupMembersListModal.jsx";
 
 const Chat = () => {
   const { user , loading} = useAuth();
@@ -39,7 +40,7 @@ const Chat = () => {
   const [groupModalOpen, setGroupModalOpen] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
-
+  const [showGroupMembers, setShowGroupMembers] = useState(false);
 
   useEffect(()=>{
     const handleNewMessage = (message)=>{
@@ -195,6 +196,7 @@ const Chat = () => {
                 <MessageList 
                   messages={messages} 
                   selectedConversation={selectedConversation} 
+                  setShowGroupMembers={setShowGroupMembers}
                 />
                 
                 <form onSubmit={handleSendMessage} className={styles.messageInputArea}>
@@ -237,6 +239,12 @@ const Chat = () => {
         <AddGroupModal
           open={groupModalOpen}
           onClose={() => setGroupModalOpen(false)}
+        />
+
+        <GroupMembersListModal
+          selectedConversation={selectedConversation}
+          open={showGroupMembers}
+          onClose={() => setShowGroupMembers(false)}
         />
       </div>
     </div>
