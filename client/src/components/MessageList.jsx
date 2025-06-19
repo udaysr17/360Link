@@ -20,17 +20,17 @@ const MessageList = ({ messages, selectedConversation, setShowGroupMembers }) =>
   return (
     <>
       <div className={styles.chatHeader}>
-        <h2 className={styles.chatName}>
+        <h2 className={styles.chatName} onClick={()=>setShowGroupMembers(true)}>
           {selectedConversation.isGroup 
-            ? selectedConversation.groupName 
+            ? selectedConversation.conversationName 
             : selectedConversation.participants?.find(p => p._id !== user._id)?.username || 'Unknown User'
           }
         </h2>
-        {selectedConversation.isGroup && (
+        {/* {selectedConversation.isGroup && (
           <span className={styles.groupInfo} onClick={()=>setShowGroupMembers(true)}>
             {selectedConversation.participants?.length || 0} members
           </span>
-        )}
+        )} */}
       </div>
       
       <div className={styles.messagesArea}>

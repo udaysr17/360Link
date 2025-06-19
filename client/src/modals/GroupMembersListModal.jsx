@@ -1,17 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 
 const GroupMembersListModal = ({ selectedConversation, open, onClose, currentUser }) => {
   const [participants, setParticipants] = useState([]);
 
   useEffect(() => {
-    console.log('participants in this group', selectedConversation?.participants);
     if (selectedConversation?.participants) {
       setParticipants(selectedConversation.participants);
     }
   }, [selectedConversation]);
 
-  // Get initials for avatar fallback
   const getInitials = (name) => {
     if (!name) return '?';
     return name
@@ -21,19 +18,19 @@ const GroupMembersListModal = ({ selectedConversation, open, onClose, currentUse
       .toUpperCase();
   };
 
-
-
   if (!open) return null;
 
   return (
     <div style={modalStyle}>
       <div style={cardStyle}>
-        <button style={closeStyle} onClick={onClose} aria-label="Close">&times;</button>
+        <button style={closeStyle} onClick={onClose} aria-label="Close">
+          ×
+        </button>
         
         <div style={headerStyle}>
-          <h1 style={titleStyle}>Group Members</h1>
+          <h2 style={titleStyle}>Group Members</h2>
           <div style={groupInfoStyle}>
-            <div style={groupNameStyle}>{selectedConversation?.conversationName}</div>
+            <div style={groupNameStyle}>{selectedConversation?.conversationName || 'Group Chat'}</div>
             <div style={memberCountStyle}>
               {participants?.length || 0} member{participants?.length !== 1 ? 's' : ''}
             </div>
@@ -67,33 +64,28 @@ const GroupMembersListModal = ({ selectedConversation, open, onClose, currentUse
                       {isAdmin && <div style={adminBadgeStyle}>Admin</div>}
                     </div>
                   </div>
-
-
                 </div>
               );
             })
           ) : (
             <div style={emptyStateStyle}>
-              <div style={emptyIconStyle}>👥</div>
               <div style={emptyTextStyle}>No members found</div>
             </div>
           )}
         </div>
-
-
       </div>
     </div>
   );
 };
 
-// Styles
+// Simple Styles
 const modalStyle = {
   position: 'fixed',
   top: 0,
   left: 0,
   width: '100vw',
   height: '100vh',
-  background: 'rgba(0,0,0,0.15)',
+  background: 'rgba(0, 0, 0, 0.5)',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -102,12 +94,11 @@ const modalStyle = {
 
 const cardStyle = {
   background: '#fff',
-  borderRadius: '12px',
-  padding: '24px',
-  minWidth: 450,
-  maxWidth: 500,
+  borderRadius: '8px',
+  padding: '0',
+  width: '450px',
   maxHeight: '80vh',
-  boxShadow: '0 4px 20px rgba(0,0,0,0.12)',
+  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
   position: 'relative',
   display: 'flex',
   flexDirection: 'column',
@@ -115,61 +106,68 @@ const cardStyle = {
 
 const closeStyle = {
   position: 'absolute',
-  top: 18,
-  right: 18,
-  fontSize: 28,
+  top: '12px',
+  right: '12px',
+  width: '30px',
+  height: '30px',
+  borderRadius: '50%',
+  background: '#f5f5f5',
   color: '#666',
-  background: 'none',
   border: 'none',
   cursor: 'pointer',
-  zIndex: 1,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  fontSize: '18px',
+  zIndex: 10,
 };
 
 const headerStyle = {
-  marginBottom: 20,
-  paddingRight: 40,
+  background: '#1c2940',
+  padding: '20px',
+  borderBottom: '1px solid #e9ecef',
+  borderRadius: '8px 8px 0 0',
 };
 
 const titleStyle = {
-  fontSize: '1.8rem',
-  fontWeight: 600,
-  marginBottom: 8,
-  color: '#333',
+  color : '#e9ecef',
+  fontSize: '1.25rem',
+  fontWeight: '600',
+  margin: '0 0 12px 0',
 };
 
 const groupInfoStyle = {
-  background: '#f8f9fa',
-  padding: '12px 16px',
-  borderRadius: 8,
-  marginBottom: 8,
+  background: '#fff',
+  padding: '12px',
+  borderRadius: '6px',
+  border: '1px solid #e9ecef',
 };
 
 const groupNameStyle = {
-  fontSize: '1.1rem',
-  fontWeight: 500,
-  color: '#2584e6',
-  marginBottom: 4,
+  fontSize: '1rem',
+  fontWeight: '500',
+  color: '#2c3e50',
+  marginBottom: '4px',
 };
 
 const memberCountStyle = {
-  fontSize: '0.9rem',
+  fontSize: '0.875rem',
   color: '#666',
 };
 
 const membersContainerStyle = {
   flex: 1,
   overflowY: 'auto',
-  marginBottom: 16,
+  padding: '16px',
 };
 
 const memberCardStyle = {
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'space-between',
-  padding: '14px 16px',
-  marginBottom: 12,
+  padding: '12px',
+  marginBottom: '8px',
   background: '#f8f9fa',
-  borderRadius: 10,
+  borderRadius: '6px',
   border: '1px solid #e9ecef',
 };
 
@@ -180,25 +178,25 @@ const memberInfoStyle = {
 };
 
 const avatarStyle = {
-  width: 45,
-  height: 45,
+  width: '40px',
+  height: '40px',
   borderRadius: '50%',
   objectFit: 'cover',
-  marginRight: 14,
+  marginRight: '12px',
 };
 
 const avatarFallbackStyle = {
-  width: 45,
-  height: 45,
+  width: '40px',
+  height: '40px',
   borderRadius: '50%',
-  background: '#2584e6',
+  background: '#007bff',
   color: '#fff',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  fontWeight: 600,
-  fontSize: '1.1rem',
-  marginRight: 14,
+  fontWeight: '600',
+  fontSize: '0.875rem',
+  marginRight: '12px',
 };
 
 const memberDetailsStyle = {
@@ -206,38 +204,36 @@ const memberDetailsStyle = {
 };
 
 const memberNameStyle = {
-  fontSize: '1.1rem',
-  fontWeight: 500,
+  fontSize: '0.95rem',
+  fontWeight: '500',
   color: '#333',
-  marginBottom: 2,
+  marginBottom: '2px',
   display: 'flex',
   alignItems: 'center',
-  gap: 8,
+  gap: '6px',
 };
 
 const memberEmailStyle = {
-  fontSize: '0.9rem',
+  fontSize: '0.8rem',
   color: '#666',
-  marginBottom: 4,
+  marginBottom: '4px',
 };
 
 const youTagStyle = {
-  fontSize: '0.8rem',
-  color: '#2584e6',
-  fontWeight: 400,
+  fontSize: '0.75rem',
+  color: '#007bff',
+  fontWeight: '400',
 };
 
 const adminBadgeStyle = {
-  fontSize: '0.75rem',
+  fontSize: '0.7rem',
   background: '#28a745',
   color: '#fff',
-  padding: '2px 8px',
-  borderRadius: 12,
-  fontWeight: 500,
+  padding: '2px 6px',
+  borderRadius: '4px',
+  fontWeight: '500',
   display: 'inline-block',
 };
-
-
 
 const emptyStateStyle = {
   textAlign: 'center',
@@ -245,13 +241,9 @@ const emptyStateStyle = {
   color: '#666',
 };
 
-const emptyIconStyle = {
-  fontSize: '3rem',
-  marginBottom: 16,
-};
-
 const emptyTextStyle = {
-  fontSize: '1.1rem',
+  fontSize: '1rem',
+  color: '#666',
 };
 
 export default GroupMembersListModal;

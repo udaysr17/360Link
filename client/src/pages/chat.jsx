@@ -14,7 +14,7 @@ import { useAuth } from "../context/AuthContext.jsx";
 import { useConversation } from "../context/ConversationContext.jsx";
 import { useSocket } from "../context/SocketContext.jsx";
 import { useNavigate } from "react-router-dom";
-import GroupMembersListModal from "../modals/groupMembersListModal.jsx";
+import GroupMembersListModal from "../modals/GroupMembersListModal.jsx";
 
 const Chat = () => {
   const { user , loading} = useAuth();
@@ -155,6 +155,21 @@ const Chat = () => {
     
       setMessages(prevMessages => [...prevMessages, newMessage]);
       setInputMessage('');
+
+      setSelectedConversation(prev => ({
+        ...prev,
+        latestMessage: newMessage
+      }));
+
+      if (setConversations) {
+        setConversations(prevConversations => 
+          prevConversations.map(conv => 
+            conv._id === selectedConversation._id 
+              ? { ...conv, latestMessage: newMessage }
+              : conv
+          )
+        );
+      }
 
       socket.emit("new message", newMessage);
     } catch (error) {

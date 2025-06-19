@@ -34,10 +34,11 @@ const createGroupChat = (async(req, res) => {
      });
  
      const savedConversation = await newConversation.save();
-     
+
+     const populatedNewGroup = await savedConversation.populate('participants', '-password')
      return res.status(201).json({
          message: "Group created successfully",
-         savedConversation
+         conversation : populatedNewGroup
      });
    } catch (err) {
     console.error(err.message)

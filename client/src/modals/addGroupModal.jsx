@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import useDebounce from '../hooks/useDebounce.js';
 import axios from 'axios';
+import { useConversation } from '../context/ConversationContext.jsx';
 
 const AddGroupModal = ({ open, onClose }) => {
   const [groupName, setGroupName] = useState('');
@@ -8,6 +10,8 @@ const AddGroupModal = ({ open, onClose }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [creating, setCreating] = useState(false);
+
+  const {conversations, setConversations} = useConversation();
 
   // Reset form when modal opens/closes
   useEffect(() => {
@@ -19,17 +23,18 @@ const AddGroupModal = ({ open, onClose }) => {
     }
   }, [open]);
 
-  // Search users with debouncing
+  const debouncedSearch = useDebounce(search, 1000);
+  
   useEffect(() => {
     const searchUsers = async () => {
-      if (search.trim().length < 2) {
+      if (debouncedSearch.trim().length < 2) {
         setSearchResults([]);
         return;
       }
-
+  
       setLoading(true);
       try {
-        const response = await axios.get(`/api/user/search?q=${encodeURIComponent(search.trim())}`);
+        const response = await axios.get(`/api/user/search?q=${encodeURIComponent(debouncedSearch.trim())}`);
         setSearchResults(response.data.users || []);
       } catch (error) {
         console.error('Error searching users:', error);
@@ -39,9 +44,8 @@ const AddGroupModal = ({ open, onClose }) => {
       }
     };
 
-    const debounceTimer = setTimeout(searchUsers, 300);
-    return () => clearTimeout(debounceTimer);
-  }, [search]);
+    searchUsers();
+  }, [debouncedSearch]);
 
   // Toggle user selection
   const toggleUserSelection = (user) => {
@@ -55,18 +59,16 @@ const AddGroupModal = ({ open, onClose }) => {
     });
   };
 
-  // Create group chat
   const handleCreateGroup = async () => {
     if (!groupName.trim()) {
       alert('Please enter a group name');
       return;
     }
-
     if (selectedUsers.length === 0) {
       alert('Please select at least one user');
       return;
     }
-
+  
     setCreating(true);
     try {
       const participantIds = selectedUsers.map(user => user._id);
@@ -75,14 +77,19 @@ const AddGroupModal = ({ open, onClose }) => {
         conversationName: groupName.trim(),
         participants: participantIds
       });
-
+  
       console.log('Group created:', response.data);
+   
+      const newGroup = response.data.conversation;
+   
+      setConversations(prev => [newGroup, ...prev]);
       
-      // Close modal and reset form
+      // Reset form and close modal
+      setGroupName('');
+      setSelectedUsers([]);
+      setSearch('');
+      setSearchResults([]);
       onClose();
-      
-      // You might want to call a callback here to refresh the chat list
-      // if (onGroupCreated) onGroupCreated(response.data.savedConversation);
       
     } catch (error) {
       console.error('Error creating group:', error);
