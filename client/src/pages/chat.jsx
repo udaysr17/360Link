@@ -17,22 +17,22 @@ import { useNavigate } from "react-router-dom";
 import GroupMembersListModal from "../modals/GroupMembersListModal.jsx";
 
 const Chat = () => {
-  const { user , loading} = useAuth();
-  const {socket} = useSocket();
-  if(loading || !socket){
-    return <LoadingSpinner/>;
+  const { user, loading } = useAuth();
+  const { socket } = useSocket();
+  if (loading || !socket) {
+    return <LoadingSpinner />;
   }
-  const { 
-    selectedConversation, 
-    setSelectedConversation, 
-    conversations, 
+  const {
+    selectedConversation,
+    setSelectedConversation,
+    conversations,
     setConversations,
     messages,
     setMessages
   } = useConversation();
 
   axios.defaults.withCredentials = true
-  
+
   const navigate = useNavigate();
   const [inputMessage, setInputMessage] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -42,24 +42,37 @@ const Chat = () => {
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [showGroupMembers, setShowGroupMembers] = useState(false);
 
-  useEffect(()=>{
-    const handleNewMessage = (message)=>{
-      // if(selectedConversation._id == message.conversation)return;
+
+  useEffect(() => {
+    const handleNewMessage = (message) => {
+      console.log("hi new message received")
       console.log("Message received from server via socket:", message);
+
+      // Add the new message to the messages state if it's for the current conversation
+      if (selectedConversation && selectedConversation._id === message.conversation) {
+        setMessages(prevMessages => [...prevMessages, message]);
+      }
+
+      // Update the conversation's latest message in the conversations list
+      setConversations(prevConversations =>
+        prevConversations.map(conv =>
+          conv._id === message.conversation
+            ? { ...conv, latestMessage: message, updatedAt: new Date() }
+            : conv
+        )
+      );
     }
 
-    socket.on("new message", (message)=>{
-      console.log("new message from backend", message);
-    });
+    socket.on("new message", handleNewMessage);
 
-    return ()=>{
+    return () => {
       socket.off("new message", handleNewMessage);
     }
-  }, [socket, user, selectedConversation])
+  }, [socket, selectedConversation, setMessages, setConversations])
 
   useEffect(() => {
     if (!socket) return;
-  
+
     const handleTyping = () => console.log("User typing...");
     const handleStopTyping = () => console.log("User stopped typing.");
 
@@ -84,7 +97,7 @@ const Chat = () => {
         toast.error(err.response?.data?.message);
       }
     };
-    
+
     fetchConversations();
   }, [setConversations]);
 
@@ -110,29 +123,29 @@ const Chat = () => {
   // Start a conversation with a user
   const startConversation = async (selectedUser) => {
     console.log("All conversations:", conversations);
-    
-    const existingConversation = conversations.find(conv => 
+
+    const existingConversation = conversations.find(conv =>
       !conv.isGroup && conv.participants.some(p => p._id === selectedUser._id)
     );
-  
+
     console.log("Existing conversation found:", existingConversation);
-    
+
     if (existingConversation) {
       setSelectedConversation(existingConversation);
     } else {
-        try {
-          const { data } = await axios.post('/api/conversation', {
-            participants: [selectedUser._id]
-          });
+      try {
+        const { data } = await axios.post('/api/conversation', {
+          participants: [selectedUser._id]
+        });
 
-          const newConversation = data.conversation;
-          setConversations([newConversation, ...conversations]);
-          setSelectedConversation(newConversation);
-        } catch (error) {
-            toast.error(error.response?.data?.message || "Something went wrong");
-          }
+        const newConversation = data.conversation;
+        setConversations([newConversation, ...conversations]);
+        setSelectedConversation(newConversation);
+      } catch (error) {
+        toast.error(error.response?.data?.message || "Something went wrong");
       }
-    
+    }
+
     setSearchTerm('');
     setSearchResults([]);
     setShowSearchResults(false);
@@ -146,13 +159,13 @@ const Chat = () => {
   const handleSendMessage = async (e) => {
     e?.preventDefault();
     if (!inputMessage.trim() || !selectedConversation) return;
-  
+
     socket.emit("stop typing", selectedConversation._id);
     try {
-      const { data } = await axios.post(`/api/message/${selectedConversation._id}`,{ content: inputMessage });
+      const { data } = await axios.post(`/api/message/${selectedConversation._id}`, { content: inputMessage });
       console.log("Send message response:", data);
       const newMessage = data.data;
-    
+
       setMessages(prevMessages => [...prevMessages, newMessage]);
       setInputMessage('');
 
@@ -190,9 +203,9 @@ const Chat = () => {
     <div className={styles.appContainer}>
       <Toaster position="top-right" />
       <Sidebar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-      
+
       <div className={styles.mainContent}>
-        <ChatHeader 
+        <ChatHeader
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
           searchResults={searchResults}
@@ -203,17 +216,17 @@ const Chat = () => {
           profileOpen={profileOpen}
           setProfileOpen={setProfileOpen}
         />
-        
+
         <div className={styles.main}>
           <main className={styles.chatSection}>
             {selectedConversation ? (
               <>
-                <MessageList 
-                  messages={messages} 
-                  selectedConversation={selectedConversation} 
+                <MessageList
+                  messages={messages}
+                  selectedConversation={selectedConversation}
                   setShowGroupMembers={setShowGroupMembers}
                 />
-                
+
                 <form onSubmit={handleSendMessage} className={styles.messageInputArea}>
                   <input
                     type="text"
@@ -225,7 +238,7 @@ const Chat = () => {
                   />
                   <button type="submit" className={styles.sendButton}>
                     <svg viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                      <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
                     </svg>
                   </button>
                 </form>
@@ -234,15 +247,15 @@ const Chat = () => {
               <NoChatSelected />
             )}
           </main>
-          
-          <ChatList 
+
+          <ChatList
             conversations={conversations}
             selectedConversation={selectedConversation}
             setSelectedConversation={setSelectedConversation}
             setGroupModalOpen={setGroupModalOpen}
           />
         </div>
-        
+
         <ProfileModal
           open={profileOpen}
           onClose={() => setProfileOpen(false)}
@@ -250,7 +263,7 @@ const Chat = () => {
           email={user.email}
           avatar={user.avatar}
         />
-        
+
         <AddGroupModal
           open={groupModalOpen}
           onClose={() => setGroupModalOpen(false)}
