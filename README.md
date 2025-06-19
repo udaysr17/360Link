@@ -29,7 +29,7 @@
 ### Prerequisites
 - Node.js
 - MongoDB Atlas 
-- Clodinary Account
+- Cloudinary Account
 
 ### Environment Setup
 
