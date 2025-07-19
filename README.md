@@ -1,6 +1,6 @@
 # 360Link - Real-Time Chat App
 
-360 Link is a full stack real time chat application build with React, Node.js, Socket.io, and MongoDB.
+built with React, Node.js, Socket.io, and MongoDB.
 
 ## Features 
 
